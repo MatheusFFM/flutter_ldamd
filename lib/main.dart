@@ -1,9 +1,10 @@
+// @dart=2.9
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:convert' show utf8;
+import 'dart:convert' show jsonEncode, utf8;
 
 void main() => runApp(MyApp());
 
@@ -13,16 +14,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  GoogleMapController? mapController;
+  GoogleMapController mapController;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
-  late Position _currentPosition;
+  Position _currentPosition;
 
   _MyAppState() {
-    Geolocator.getPositionStream(intervalDuration: Duration(seconds: 5))
+    Geolocator.getPositionStream(intervalDuration: Duration(seconds: 10))
         .listen((position) {
       _determinePosition().then((val) => _upadtePosition(val));
     });
@@ -40,8 +41,10 @@ class _MyAppState extends State<MyApp> {
           body: GoogleMap(
             onMapCreated: _onMapCreated,
             initialCameraPosition: CameraPosition(
-                target: LatLng(
-                    _currentPosition.latitude, _currentPosition.longitude),
+                target: _currentPosition != null
+                    ? LatLng(
+                        _currentPosition.latitude, _currentPosition.longitude)
+                    : LatLng(0, 0),
                 zoom: 17.0),
             mapType: MapType.normal,
             myLocationEnabled: true,
@@ -65,11 +68,14 @@ class _MyAppState extends State<MyApp> {
     //Update currentPosition
     setState(() => {_currentPosition = val});
 
-//Mock
-    var url =
-        'https://us-central1-quotes-app-455da.cloudfunctions.net/getquotes-function';
-    var httpClient = new HttpClient();
     String result;
+    var url =
+        'https://us-central1-lunar-planet-315715.cloudfunctions.net/calcDistance?lat=' +
+            _currentPosition.latitude.toString() +
+            '&long=' +
+            _currentPosition.longitude.toString();
+
+    var httpClient = new HttpClient();
 
     try {
       var request = await httpClient.getUrl(Uri.parse(url));
@@ -84,12 +90,27 @@ class _MyAppState extends State<MyApp> {
       result = 'Falha na invocação da função getquotes.';
     }
 
-    print("RESULT => " + result);
+    // var httpclient = http.Client();
 
-    // If the widget was removed from the tree while the message was in flight,
-    // we want to discard the reply rather than calling setState to update our
-    // non-existent appearance.
-    if (!mounted) return;
+    // final response = await httpclient.post(
+    //   Uri.parse(url),
+    //   headers: <String, String>{
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //   },
+    //   body: jsonEncode(<String, double>{
+    //     'lat': _currentPosition.latitude,
+    //     'long': _currentPosition.longitude
+    //   }),
+    // );
+
+    // if (response.statusCode == HttpStatus.ok) {
+    //   var data = response.body;
+    //   result = data;
+    // } else {
+    //   result = 'Erro buscando citação:\nHttp status ${response.statusCode}';
+    // }
+
+    print("RESULT => " + result);
   }
 
   Future<Position> _determinePosition() async {
