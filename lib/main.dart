@@ -19,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   late Position _currentPosition;
 
   _MyAppState() {
-    Geolocator.getPositionStream().listen((position) {
+    Geolocator.getPositionStream(intervalDuration: Duration(seconds: 10)).listen((position) {
       _determinePosition()
           .then((val) => setState(() => {_currentPosition = val}));
     });
