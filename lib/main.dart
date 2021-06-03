@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:convert' show utf8;
 
 void main() => runApp(MyApp());
 
@@ -19,9 +22,9 @@ class _MyAppState extends State<MyApp> {
   late Position _currentPosition;
 
   _MyAppState() {
-    Geolocator.getPositionStream(intervalDuration: Duration(seconds: 10)).listen((position) {
-      _determinePosition()
-          .then((val) => setState(() => {_currentPosition = val}));
+    Geolocator.getPositionStream(intervalDuration: Duration(seconds: 5))
+        .listen((position) {
+      _determinePosition().then((val) => _upadtePosition(val));
     });
   }
 
@@ -56,6 +59,37 @@ class _MyAppState extends State<MyApp> {
             ]),
           ),
         ));
+  }
+
+  _upadtePosition(Position val) async {
+    //Update currentPosition
+    setState(() => {_currentPosition = val});
+
+//Mock
+    var url =
+        'https://us-central1-quotes-app-455da.cloudfunctions.net/getquotes-function';
+    var httpClient = new HttpClient();
+    String result;
+
+    try {
+      var request = await httpClient.getUrl(Uri.parse(url));
+      var response = await request.close();
+      if (response.statusCode == HttpStatus.ok) {
+        var data = await response.transform(utf8.decoder).join();
+        result = data;
+      } else {
+        result = 'Erro buscando citação:\nHttp status ${response.statusCode}';
+      }
+    } catch (exception) {
+      result = 'Falha na invocação da função getquotes.';
+    }
+
+    print("RESULT => " + result);
+
+    // If the widget was removed from the tree while the message was in flight,
+    // we want to discard the reply rather than calling setState to update our
+    // non-existent appearance.
+    if (!mounted) return;
   }
 
   Future<Position> _determinePosition() async {
