@@ -49,17 +49,7 @@ class _MyAppState extends State<MyApp> {
             mapType: MapType.normal,
             myLocationEnabled: true,
             markers: _createMarkers(),
-            circles: Set.from([
-              Circle(
-                circleId: CircleId('Radio'),
-                center: LatLng(
-                    _currentPosition.latitude, _currentPosition.longitude),
-                radius: 50,
-                fillColor: Colors.cyan.withOpacity(0.15),
-                strokeColor: Colors.cyan.withOpacity(0.3),
-                strokeWidth: 2,
-              )
-            ]),
+            circles: _createCircles(),
           ),
         ));
   }
@@ -135,6 +125,80 @@ class _MyAppState extends State<MyApp> {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  Set<Circle> _createCircles() {
+    double radius = 100;
+    Color fillColor = Colors.cyan.withOpacity(0.15);
+    Color strokeColor = Colors.cyan.withOpacity(0.3);
+    const strokeWidth = 2;
+
+    return {
+      Circle(
+        circleId: CircleId('Contagem'),
+        center: LatLng(-19.939009215295368, -44.07606860247624),
+        radius: radius,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidth: strokeWidth,
+      ),
+      Circle(
+        circleId: CircleId('Poço de caldas'),
+        center: LatLng(-21.799077076240344, -46.5985474603033),
+        radius: radius,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidth: strokeWidth,
+      ),
+      Circle(
+        circleId: CircleId('São Gabriel'),
+        center: LatLng(-19.859488735571382, -43.91905810753607),
+        radius: radius,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidth: strokeWidth,
+      ),
+      Circle(
+        circleId: CircleId('Barreiro'),
+        center: LatLng(-19.976523364712037, -44.02588694432856),
+        radius: radius,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidth: strokeWidth,
+      ),
+      Circle(
+        circleId: CircleId('Betim'),
+        center: LatLng(-19.95492031627776, -44.198411644998146),
+        radius: radius,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidth: strokeWidth,
+      ),
+      Circle(
+        circleId: CircleId('Coração Eucarístico'),
+        center: LatLng(-19.922690711945393, -43.99258427383518),
+        radius: radius,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidth: strokeWidth,
+      ),
+      Circle(
+        circleId: CircleId('Uberlandia'),
+        center: LatLng(-18.92394435311863, -48.29538344501943),
+        radius: radius,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidth: strokeWidth,
+      ),
+      Circle(
+        circleId: CircleId('Praça da Liberdade'),
+        center: LatLng(-19.933127295410294, -43.93710548732594),
+        radius: radius,
+        fillColor: fillColor,
+        strokeColor: strokeColor,
+        strokeWidth: strokeWidth,
+      ),
+    };
   }
 
   Set<Marker> _createMarkers() {
