@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -11,22 +10,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
-  
 
   late Position _currentPosition;
 
-    _MyAppState() {
+  _MyAppState() {
     Geolocator.getPositionStream().listen((position) {
-    _determinePosition().then((val) => setState(() => {
-      _currentPosition = val
-    }));
-     });
-    
+      _determinePosition()
+          .then((val) => setState(() => {_currentPosition = val}));
+    });
   }
 
   @override
@@ -40,7 +36,10 @@ class _MyAppState extends State<MyApp> {
           ),
           body: GoogleMap(
             onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(target: LatLng(_currentPosition.latitude, _currentPosition.longitude), zoom: 17.0),
+            initialCameraPosition: CameraPosition(
+                target: LatLng(
+                    _currentPosition.latitude, _currentPosition.longitude),
+                zoom: 17.0),
           ),
         ));
   }
@@ -50,19 +49,19 @@ class _MyAppState extends State<MyApp> {
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if(!serviceEnabled) {
+    if (!serviceEnabled) {
       return Future.error('Location services are disabled');
     }
 
     permission = await Geolocator.checkPermission();
-    if(permission == LocationPermission.denied){
+    if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if(permission == LocationPermission.denied) {
+      if (permission == LocationPermission.denied) {
         return Future.error('Location permissions are denied');
       }
     }
 
-    if(permission == LocationPermission.deniedForever) {
+    if (permission == LocationPermission.deniedForever) {
       return Future.error('Location permissions are permantly denied');
     }
 
