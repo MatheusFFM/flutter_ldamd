@@ -6,7 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:convert' show jsonEncode, utf8;
 
-void main() => runApp(MyApp());
+void main() => runApp(MaterialApp(home: MyApp()));
 
 class MyApp extends StatefulWidget {
   @override
@@ -21,6 +21,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Position _currentPosition;
+  String lastMessage = "";
 
   _MyAppState() {
     Geolocator.getPositionStream(intervalDuration: Duration(seconds: 10))
@@ -28,6 +29,24 @@ class _MyAppState extends State<MyApp> {
       _determinePosition().then((val) => _upadtePosition(val));
     });
   }
+
+  createAlertDialog(String message) {
+    return showDialog(context: context,builder:(context){
+      return AlertDialog(
+        title:Text(message),
+        actions: [
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      );
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +98,12 @@ class _MyAppState extends State<MyApp> {
     } catch (exception) {
       result = 'Falha na invocação da função getquotes.';
     }
+
+    if(result != "" && result != lastMessage){
+      createAlertDialog(result);
+    } 
+    lastMessage = result;
+
 
     // var httpclient = http.Client();
 
